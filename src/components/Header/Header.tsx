@@ -1,9 +1,9 @@
-import { FC } from 'react'
+import { Dispatch, FC, SetStateAction } from 'react'
 import { Input } from '../ui/input'
 
 type HeaderProps = {
     search: string | undefined
-    setSearch: (value: string | undefined) => void
+    setSearch: Dispatch<SetStateAction<string>>
 }
 
 const Header: FC<HeaderProps> = ({ search, setSearch }) => {

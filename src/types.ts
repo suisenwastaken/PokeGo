@@ -17,3 +17,8 @@ export type PokemonType = {
     name: string
     color: string
 }
+
+export type PokemonLink = {
+    name: string,
+    url: string,
+}
