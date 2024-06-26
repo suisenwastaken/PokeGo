@@ -1,8 +1,8 @@
 {
-    "name": "pokego",
+    "name": "PokeGo",
     "private": true,
     "version": "0.0.0",
-    "homepage": "https://suisenwastaken.github.io/pokego/",
+    "homepage": "https://suisenwastaken.github.io/PokeGo/",
     "type": "module",
     "scripts": {
         "build": "vite build",

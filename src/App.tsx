@@ -51,6 +51,7 @@ const App = () => {
 
     useEffect(() => {
         setPokemonData(null)
+        setPage(1)
     }, [search])
 
     useEffect(() => {
