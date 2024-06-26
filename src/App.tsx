@@ -17,12 +17,10 @@ const App = () => {
     const [page, setPage] = useState<number>(1)
     const [currentPokemon, setCurrentPokemon] = useState<Pokemon | null>(null)
     const [isSheetOpen, setIsSheetOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
 
     const handleScroll = () => {
-        if (
-            window.innerHeight + document.documentElement.scrollTop ===
-            document.documentElement.offsetHeight
-        ) {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
             setPage((prevPage) => prevPage + 1)
         }
     }
@@ -55,12 +53,12 @@ const App = () => {
     }, [search])
 
     useEffect(() => {
+        setIsLoading(true)
         const timeout = setTimeout(async () => {
             if (!pokemonLinks) {
                 console.error('pokemonLinks is null')
                 return
             }
-
             try {
                 const filteredLinks = searchPokemonByName(search, pokemonLinks)
                 const slicedLinks = filteredLinks.slice(
@@ -91,6 +89,9 @@ const App = () => {
             } catch (error) {
                 console.error('Ошибка при выполнении запроса:', error)
             }
+            finally{
+                setIsLoading(false)
+            }
         }, 1000)
 
         return () => clearTimeout(timeout)
@@ -104,27 +105,29 @@ const App = () => {
     return (
         <div className="flex h-full w-full flex-col items-center justify-center">
             <Header search={search} setSearch={setSearch} />
-            {pokemonData ? (
-                pokemonData.length === 0 ? (
-                    <div className="text-4xl pt-40">Nothing found</div>
-                ) : (
-                    <div className="grid h-auto w-3/4 grid-cols-2 items-center justify-center gap-4 bg-background py-16 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                        {pokemonData.map((el) => (
-                            <PokemonCard
-                                key={el.id}
-                                pokemon={el}
-                                onClick={() => handleCardClick(el)}
-                            />
-                        ))}
-                    </div>
-                )
+            {pokemonData?.length === 0 ? (
+                <div className="pt-40 text-4xl">Nothing found</div>
             ) : (
+                <div className="grid h-auto w-3/4 grid-cols-2 items-center justify-center gap-4 bg-background py-16 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    {pokemonData?.map((el) => (
+                        <PokemonCard
+                            key={el.id}
+                            pokemon={el}
+                            onClick={() => handleCardClick(el)}
+                        />
+                    ))}
+                </div>
+            )}
+            {isLoading ? (
                 <img
                     src="pokeball.gif"
                     alt="loader"
-                    className="pt-40 grayscale"
+                    className=" py-10 grayscale"
                 />
+            ) : (
+                ''
             )}
+
             <PokemonModal
                 pokemon={currentPokemon}
                 isOpen={isSheetOpen}
