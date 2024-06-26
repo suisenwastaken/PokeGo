@@ -2,7 +2,7 @@
     "name": "pokego",
     "private": true,
     "version": "0.0.0",
-    "homepage": "https://suisenwastaken.github.io/PokeGo/",
+    "homepage": "https://suisenwastaken.github.io/pokego/",
     "type": "module",
     "scripts": {
         "predeploy": "npm run build",

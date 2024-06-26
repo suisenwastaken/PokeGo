@@ -1,5 +1,5 @@
 import PokemonCard from './components/PokemonCard/PokemonCard'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Header from './components/Header/Header'
 import {
     PokemonAPI,
