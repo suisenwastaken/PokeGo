@@ -6,6 +6,7 @@ import {
 } from './types'
 
 export const PokemonAPI = 'https://pokeapi.co/api/v2/pokemon/'
+export const pokemonPerPage = 20
 
 export function mapApiDataToPokemon(apiData: any): Pokemon {
     // Извлечение характеристик из stats
