@@ -1,5 +1,5 @@
 import PokemonCard from './components/PokemonCard/PokemonCard'
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import Header from './components/Header/Header'
 import {
     PokemonAPI,
@@ -14,14 +14,17 @@ const App = () => {
     const [search, setSearch] = useState<string>('')
     const [pokemonData, setPokemonData] = useState<Pokemon[] | null>(null)
     const [pokemonLinks, setPokemonLinks] = useState<PokemonLink[] | null>(null)
-    const [page, setPage] = useState<number>(1)
+    const [page, setPage] = useState<number>(0)
     const [currentPokemon, setCurrentPokemon] = useState<Pokemon | null>(null)
     const [isSheetOpen, setIsSheetOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
 
     const handleScroll = () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-            setPage((prevPage) => prevPage + 1)
+        if (
+            window.innerHeight + window.scrollY >=
+            document.body.offsetHeight - 100
+        ) {
+            setIsLoading(true)
         }
     }
 
@@ -52,50 +55,57 @@ const App = () => {
         setPage(1)
     }, [search])
 
-    useEffect(() => {
-        setIsLoading(true)
-        const timeout = setTimeout(async () => {
-            if (!pokemonLinks) {
-                console.error('pokemonLinks is null')
-                return
-            }
-            try {
-                const filteredLinks = searchPokemonByName(search, pokemonLinks)
-                const slicedLinks = filteredLinks.slice(
-                    (page - 1) * pokemonPerPage,
-                    page * pokemonPerPage
-                )
+    
+    useLayoutEffect(() => {
+        if (isLoading) {
+            const timeout = setTimeout(async () => {
+                if (!pokemonLinks) {
+                    console.error('pokemonLinks is null')
+                    return
+                }
+                try {
+                    const filteredLinks = searchPokemonByName(
+                        search,
+                        pokemonLinks
+                    )
+                    const slicedLinks = filteredLinks.slice(
+                        (page - 1) * pokemonPerPage,
+                        page * pokemonPerPage
+                    )
 
-                const fetchPromises = slicedLinks.map(async (el) => {
-                    const pokemonResponse = await fetch(el.url)
-                    if (pokemonResponse.ok) {
-                        const data = await pokemonResponse.json()
-                        return mapApiDataToPokemon(data)
-                    } else {
-                        console.error(
-                            `Ошибка при запросе: ${pokemonResponse.status} ${pokemonResponse.statusText}`
-                        )
-                        throw new Error(
-                            `Ошибка при запросе: ${pokemonResponse.status} ${pokemonResponse.statusText}`
-                        )
-                    }
-                })
+                    const fetchPromises = slicedLinks.map(async (el) => {
+                        const pokemonResponse = await fetch(el.url)
+                        if (pokemonResponse.ok) {
+                            const data = await pokemonResponse.json()
+                            return mapApiDataToPokemon(data)
+                        } else {
+                            console.error(
+                                `Ошибка при запросе: ${pokemonResponse.status} ${pokemonResponse.statusText}`
+                            )
+                            throw new Error(
+                                `Ошибка при запросе: ${pokemonResponse.status} ${pokemonResponse.statusText}`
+                            )
+                        }
+                    })
 
-                const fetchedPokemonData: Pokemon[] =
-                    await Promise.all(fetchPromises)
-                setPokemonData((prev) =>
-                    prev ? [...prev, ...fetchedPokemonData] : fetchedPokemonData
-                )
-            } catch (error) {
-                console.error('Ошибка при выполнении запроса:', error)
-            }
-            finally{
-                setIsLoading(false)
-            }
-        }, 1000)
+                    const fetchedPokemonData: Pokemon[] =
+                        await Promise.all(fetchPromises)
+                    setPokemonData((prev) =>
+                        prev
+                            ? [...prev, ...fetchedPokemonData]
+                            : fetchedPokemonData
+                    )
+                } catch (error) {
+                    console.error('Ошибка при выполнении запроса:', error)
+                } finally {
+                    setIsLoading(false)
+                }
+            }, 1000)
 
-        return () => clearTimeout(timeout)
-    }, [pokemonLinks, search, page])
+            setPage((prev) => prev + 1)
+            return () => clearTimeout(timeout)
+        }
+    }, [pokemonLinks, search, isLoading])
 
     const handleCardClick = (pokemon: Pokemon) => {
         setCurrentPokemon(pokemon)
@@ -122,7 +132,7 @@ const App = () => {
                 <img
                     src="pokeball.gif"
                     alt="loader"
-                    className=" py-10 grayscale"
+                    className="py-10 grayscale"
                 />
             ) : (
                 ''
