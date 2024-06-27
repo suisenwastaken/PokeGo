@@ -53,6 +53,7 @@ const App = () => {
     useEffect(() => {
         setPokemonData(null)
         setPage(1)
+        setIsLoading(true)
     }, [search])
 
     
