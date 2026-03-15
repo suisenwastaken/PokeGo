@@ -17,7 +17,7 @@ const App = () => {
     const [page, setPage] = useState<number>(0)
     const [currentPokemon, setCurrentPokemon] = useState<Pokemon | null>(null)
     const [isSheetOpen, setIsSheetOpen] = useState(false)
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleScroll = () => {
         if (
